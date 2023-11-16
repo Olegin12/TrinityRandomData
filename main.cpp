@@ -2,22 +2,23 @@
 #include <stdint.h>
 #include <fstream>
 
+    struct VersionHeader
+    {
+        uint16_t major_version;
+        uint16_t minor_version;
+    };
 
-
-
-struct VersionHeader
+namespace DeviceType
 {
-    uint16_t major_version;
-    uint16_t minor_version;
-};
+    enum DeviceType : uint16_t
+    {
+        UNKNOWN     = 00,
+        REGISTRATOR = 01,
+        VALVE       = 02,
+        MANDREL     = 03
+    };
+}
 
-enum DeviceType : uint16_t
-{
-    UNKNOWN     = 00,
-    REGISTRATOR = 01,
-    VALVE       = 02,
-    MANDREL     = 03
-};
 
 struct DeviceListHeader // well_device_card
 {
@@ -29,52 +30,65 @@ struct DeviceListHeader // well_device_card
     uint16_t reserved[9];
 };
 
-enum SensorType : uint16_t
+namespace SensorType
 {
-    UNKNOWN        = 0,
-    PRESS_INTERNAL = 1,
-    PRESS_EXTERNAL = 2,
-    TEMP_INTERNAL  = 3,
-    TEMP_EXTERNAL  = 4,
-    PPR            = 5, // Pulse per revolution
-    MOTOR_CURRENT  = 6,
-    MOTOR_TEMP     = 7,
-    HEAD_VOLTAGE   = 8,
-    BOARD_VOLTAGE  = 9,
-    BOARD_TEMP     = 10,
-    CTRL_1         = 11,
-    CTRL_2         = 12
-};
+    enum SensorType : uint16_t
+    {
+        UNKNOWN        = 0,
+        PRESS_INTERNAL = 1,
+        PRESS_EXTERNAL = 2,
+        TEMP_INTERNAL  = 3,
+        TEMP_EXTERNAL  = 4,
+        PPR            = 5, // Pulse per revolution
+        MOTOR_CURRENT  = 6,
+        MOTOR_TEMP     = 7,
+        HEAD_VOLTAGE   = 8,
+        BOARD_VOLTAGE  = 9,
+        BOARD_TEMP     = 10,
+        CTRL_1         = 11,
+        CTRL_2         = 12
+    };
+}
 
-enum DataType : uint16_t
+namespace DataType
 {
-    UNKNOWN = 0,
-    UINT_16_DATA = 1,
-    UINT_32_DATA = 2,
-    FLOAT_DATA   = 3
-};
+    enum DataType : uint16_t
+    {
+        UNKNOWN = 0,
+        UINT_16_DATA = 1,
+        UINT_32_DATA = 2,
+        FLOAT_DATA   = 3
+    };
+}
 
-enum VisualisationType : uint16_t
+namespace VisualisationType
 {
-    UNKNOWN       = 0,
-    VISUALISATION = 1,
-    LOGGING       = 2,
-    CONTROL       = 3
-};
+    enum VisualisationType : uint16_t
+    {
+        UNKNOWN       = 0,
+        VISUALISATION = 1,
+        LOGGING       = 2,
+        CONTROL       = 3
+    };
+}
 
-enum UnitsType : uint16_t
+namespace UnitsType
 {
-    UNKNOWN = 0,
-    CELSIUM = 1,
-    MPA     = 2,
-    VOLTS   = 3,
-    RPM     = 4,
-    AMPERS  = 5,
-    ADC     = 6,
-    METERS  = 7,
-    SANTIMETERS = 8,
-    FOOTS   = 9
-};
+    enum UnitsType : uint16_t
+    {
+        UNKNOWN = 0,
+        CELSIUM = 1,
+        MPA     = 2,
+        VOLTS   = 3,
+        RPM     = 4,
+        AMPERS  = 5,
+        ADC     = 6,
+        METERS  = 7,
+        SANTIMETERS = 8,
+        FOOTS   = 9
+    };
+}
+
 
 struct ChannelListHeader
 {
@@ -126,7 +140,7 @@ int main()
         DeviceListHeader device_list_header;
         device_list_header.well_id = 1001;
         device_list_header.device_id = 2001;
-        device_list_header.device_type = DeviceType::MANDREL; // TODO: постараться убрать приведение типа здесь (почитать про enum class в c++)
+        device_list_header.device_type = DeviceType::DeviceType::MANDREL;
         device_list_header.sensor_number = 2;
         device_list_header.installation_depth = 100; // cm
 
@@ -143,14 +157,14 @@ int main()
         // For header list
         ChannelListHeader channel_list_header;
         channel_list_header.device_id = 2001;
-        channel_list_header.sensor_type = SensorType::PRESS_INTERNAL;
-        channel_list_header.data_type   = (uint16_t)DataType::FLOAT_DATA;
-        channel_list_header.visual_type = (uint16_t)VisualisationType::VISUALISATION;
+        channel_list_header.sensor_type = SensorType::SensorType::PRESS_INTERNAL;
+        channel_list_header.data_type   = DataType::DataType::FLOAT_DATA;
+        channel_list_header.visual_type = VisualisationType::VisualisationType::VISUALISATION;
         channel_list_header.hw_version = 1;
         channel_list_header.fw_version = 1;
         channel_list_header.sensor_depth_offset = 100;
         channel_list_header.calibration_flag = 1;
-        channel_list_header.units_type = (uint16_t)UnitsType::MPA;
+        channel_list_header.units_type = UnitsType::UnitsType::MPA;
 
         wf.write((char *) &channel_list_header, sizeof(channel_list_header));
     }
